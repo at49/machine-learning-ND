@@ -39,7 +39,9 @@ def Draw(pred, features, poi, mark_poi=False, name="image.png", f1_name="feature
 
 
 ### load in the dict of dicts containing all the data on each person in the dataset
-data_dict = pickle.load( open(r"C:\Users\athapliyal\Documents\GitHub\machine-learning-ND\ud120-projects-master\final_project\final_project_dataset.pkl", "r") )
+file = open(r"C:\Users\athapliyal\Documents\GitHub\machine-learning-ND\ud120-projects-master\final_project\final_project_dataset.pkl", "rb")
+print(file)
+data_dict = pickle.load(file)
 ### there's an outlier--remove it! 
 data_dict.pop("TOTAL", 0)
 
