@@ -180,14 +180,14 @@ class Environment(object):
         """ This function is called when a time step is taken turing a trial. """
 
         # Pretty print to terminal
-        print("")
-        print("/-------------------")
-        print("| Step {} Results".format(self.t))
-        print("\-------------------")
-        print("")
+        print ""
+        print "/-------------------"
+        print "| Step {} Results".format(self.t)
+        print "\-------------------"
+        print ""
 
         if(self.verbose == True): # Debugging
-            print("Environment.step(): t = {}".format(self.t))
+            print "Environment.step(): t = {}".format(self.t)
 
         # Update agents, primary first
         if self.primary_agent is not None:
@@ -210,12 +210,12 @@ class Environment(object):
                 self.done = True
                 self.success = False
                 if self.verbose: # Debugging
-                    print("Environment.step(): Primary agent hit hard time limit ({})! Trial) aborted.".format(self.hard_time_limit)
+                    print "Environment.step(): Primary agent hit hard time limit ({})! Trial aborted.".format(self.hard_time_limit)
             elif self.enforce_deadline and agent_deadline <= 0:
                 self.done = True
                 self.success = False
                 if self.verbose: # Debugging
-                    print("Environment.step(): Primary agent ran out of time! Trial aborted.")
+                    print "Environment.step(): Primary agent ran out of time! Trial aborted."
 
         self.t += 1
 
@@ -372,10 +372,10 @@ class Environment(object):
                 self.success = True
 
                 if(self.verbose == True): # Debugging
-                    print("Environment.act(): Primary agent has reached destination!")
+                    print "Environment.act(): Primary agent has reached destination!"
 
             if(self.verbose == True): # Debugging
-                print("Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward))
+                print "Environment.act() [POST]: location: {}, heading: {}, action: {}, reward: {}".format(location, heading, action, reward)
 
             # Update metrics
             self.step_data['t'] = self.t
@@ -393,7 +393,7 @@ class Environment(object):
             self.trial_data['actions'][violation] += 1
 
             if(self.verbose == True): # Debugging
-                print("Environment.act(): Step data: {}".format(self.step_data))
+                print "Environment.act(): Step data: {}".format(self.step_data)
         return reward
 
     def compute_dist(self, a, b):
