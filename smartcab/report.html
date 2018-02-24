@@ -12009,7 +12009,8 @@ Run the agent.py file after setting the flags from projects/smartcab folder inst
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Answer:</strong> Considering that the agent is taking completely random actions at each step and is also not learning, it is unsurprising that it gets a poor safety and reliability rating of F. On the top left chart, we see that the agent has a high frequency of taking bad actions. The agent is making a lot more violations than accidents, and throughout the 20 trials, the agent is consistently making a higher number of major accidents and violations versus minor ones. The rate of reliability remains flat and at/near 0% till about 13 trials, after which it increases slightly, finally stabilizing at about 20%. While this is slightly better than staying at 0%, the agent is obviously performing quite poorly overall.</p>
+<p><strong>Answer:</strong> At the start of the training trials, the agent is taking bad actions almost 50% of the time. Over the course of the 20 trials, the agent is getting into major accidents 8-9% of the time, and minor ones 3-5% of the time.</p>
+<p>Considering that the agent is taking completely random actions at each step and is also not learning, it is unsurprising that it gets a poor safety and reliability rating of F. On the top left chart, we see that the agent has a high frequency of taking bad actions. The agent is making a lot more violations than accidents, and throughout the 20 trials, the agent is consistently making a higher number of major accidents and violations versus minor ones. The rate of reliability remains flat and at/near 0% till about 13 trials, after which it increases slightly, finally stabilizing at about 20%. While this is slightly better than staying at 0%, the agent is obviously performing quite poorly overall.</p>
 <p>As mentioned at the start of the project, the rewards are setup to be higher in absolute terms when the agent makes an error. Given the current reward structure, the top right chart corresponds to the top left in that the agent is penalized quite heavily for its bad actions. We can see a relationship between the two, as during trials 11-14, the agent's frequency of bad actions goes up slightly, while its rewards go down (negatively) during that timeframe. However, the outcome of the results do not change significantly as we increase the number of trials.</p>
 <p>This smartcab would not be considered safe or reliable for its passengers because it is a) taking random actions that do no relate to the environment (such as a red light or oncoming traffic) and b) not learning from its mistakes and therefore not improving or maximizing its rewards function.</p>
 
@@ -12061,6 +12062,18 @@ Run the agent.py file after setting the flags from projects/smartcab folder inst
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong> Each feature available to the agent is important for either safety or efficiency or both. However, I'd argue that 'inputs' is the most important feature as we'd prioritize safety over efficiency in the real world. 'inputs' is also important as it teaches the agent when to idle in a state versus moving and potentially causing an accident. 'waypoint' and 'deadline' are largely relevant to efficiency as they would help the agent learn the most efficient route to reach a pre-determined location in the fastest way. One other thing to note however, is that 'waypoint' or 'deadline' alone are not as important, as we want the agent to drive safely first, and then aim to improve efficiency on its route.</p>
+<p>Features to include:</p>
+<ul>
+<li>Waypoint - it is important to let the agent know where it needs to go. </li>
+<li>left (input) - important for the agent to know where the vehicle on its left is about to go in the next step. This is irrelevant when the light is red, however, knowing what action the vehicle is going to take will let the agent know where it can and cannot go i.e. if the vehicle is going forward, the agent needs to learn to wait.</li>
+<li>oncoming (input) - similar to the left input, the agent needs to learn <em>not</em> to make left turns when the oncoming vehicle is going forward. The agent, in this instance, can make a right turn provided the light is green.</li>
+<li>light (input) - agent needs to learn when to idle and when to perform other actions like moving left, right or forward. Without this feature, the agent would violate the most basic traffic rules.</li>
+</ul>
+<p>Features nots included:</p>
+<ul>
+<li>Deadline - including it may mean that the agent will weight it the same or in a similar fashion as it does safety meausures. In fact, the agent may end up getting into more accidents because it is trying to reach the destination on time. </li>
+<li>right (input) - the feature isn't necessary to include in the space as it is not giving much new information to the ageng in its learning given we are following US traffic laws i.e. the agent only needs to care about oncoming and left traffic along with the light in order to make valid actions. Example, if the light is green or red and no traffic from the left or oncoming is in the agent's way, the agent has enough information to take an action without caring about the vehicle on its right.</li>
+</ul>
 
 </div>
 </div>
@@ -12094,8 +12107,8 @@ Run the agent.py file after setting the flags from projects/smartcab folder inst
 <p>light: 2 states (red, green)
 left/right/oncoming: will all have 4 states each (none, forward, left, right)
 waypoint: 3 states (forward, left, right)</p>
-<p>or a total of 2 x 3 x 3 x 3 x 3 = 162 states.</p>
-<p>However, we can reduce these further by dropping more features from the list. In our current environment, a right turn is permitted in all light states except when there is oncoming traffic from the agent's left. Since we can get this information from the 'left' and 'incoming' features, we can then drop 'right' from our function. Then, we are left with light, left, oncoming and waypoint or 2 x 3 x 3 x 3 = 54 states, which is a good amount for the agent to learn without running too many training trials. Of course, the goal is to first focus on safety, so leaving 'deadline' out of this also seems reasonable.</p>
+<p>or a total of 2 x 4 x 4 x 4 x 3 = 384 states.</p>
+<p>However, we can reduce these further by dropping more features from the list. In our current environment, a right turn is permitted in all light states except when there is oncoming traffic from the agent's left. Since we can get this information from the 'left' and 'incoming' features, we can then drop 'right' from our function. Then, we are left with light, left, oncoming and waypoint or 2 x 4 x 4 x 3 = 96 states, which is a good amount for the agent to learn without running too many training trials. Of course, the goal is to first focus on safety, so leaving 'deadline' out of this also seems reasonable.</p>
 
 </div>
 </div>
@@ -12316,7 +12329,7 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong> The agent's overall performance, both in terms of safety and reliability have gone up significantly in the optimized version of the Q-Learning simulation. As in prior simluations, the agent's frequency of making bad decisions goes down as number of trials increase, although it drops down to a much lower level than before. The number of violations and accidents, both minor and major, also go down to a much lower level than before, as no. of trials go up. It seems as though the agent is still making more major violations/accidents as compared to minor ones, but the frequency rate is not high enough to be alarming. We also see that as # of bad actions go down, the agent’s rolling avg. reward per action goes up. After reaching about 400 trials, the agent receives mostly positive rewards with very few slip-ups. This can also be seen in the reliability rate, which starts to stabilize @ 90% or above after about 500 trials.</p>
-<p>However, to get to this level of performance, I did have to increase the number of training trials by a lot versus the default (20). Initially, I started with a decay of -0.05, which ended up with a very poor safety rating of F. Switching to a * 0.995 decay helped improve the results quite a bit. I also tried different values of alpha, starting with the default rate of 0.5, and then lowered it to alpha=0.3 and used an epsilon tolerance=0.01.</p>
+<p>However, to get to this level of performance, I did have to increase the number of training trials by a lot versus the default (20). Initially, I started with a decay of -0.05, which ended up with a very poor safety rating of F. Switching to a * 0.995 decay helped improve the results quite a bit. I also tried different values of alpha, starting with the default rate of 0.5, and then lowered it to alpha=0.3 and used an epsilon tolerance=0.01. I lowered the alpha so as to give the agent a lot more training trials and make it less biased to recent information, and the low tolerance allows the agent to have enough time to use the learning factor.</p>
 <p>A few notes that answer the remaining questions above:</p>
 <ul>
 <li>Default trails = 20, but I found that to fully optimize my model i.e. get the best rating and have the agent gravitate towards positive rewards more often than not, I needed to increase the # of trials quite a bit. As can be seen in the charts, I ended up with around 1000 trials, although 500 or so would give similar results. Only after 500 trials does the agent really start to maintain positive rolling rewards, and the reliability rate stays at a really high rate. I also increased the no. of testing trials from 10 to 50, to see if the agent performed well in scenarios it may not encounter if trials were only 10. </li>
@@ -12361,9 +12374,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong> Answers to questions below in order:</p>
-<p><strong>1)</strong> For the environment we have setup for this agent, I would summarize the optimal policy as below, looking at various scenarios and ensuring that the agent's actions are exactly like they would be in a real-world scenario. Note that to limit the number of training trials (I aimed for staying &lt; 1000) this agent would need, I did not enforce any deadline, or use the 'right' input. However, an optimal policy, one that would accomodate all rules, would include these two in the simulation as well.</p>
+<p><strong>1)</strong> For the environment we have setup for this agent, I would summarize the optimal policy as below, looking at various scenarios and ensuring that the agent's actions are exactly like they would be in a real-world scenario. However, an optimal policy, one that would accomodate all rules, would include the two features I didn't, in the simulation as well.</p>
 <p><strong>Inputs</strong>
-If <em>light=green</em>, and there is no oncoming traffic in the direction the agent needs to go (follow waypoint), then agent can move and gets a reward <br>
+If <em>light=green</em>, and there is no oncoming traffic in the direction the agent needs to go (follow waypoint), then agent can move and gets a reward. If there is oncoming traffic, the agent should do nothing. <br>
 otherwise if light = red, action is always None <em>unless</em> there is no oncoming traffic form agent's left and agent needs to go right. If agent moves in the former scenario, we want to penalize it heavily as the action can cause an accident.<br>
 For <em>oncoming traffic</em> (when light=green), <br>
 If traffic=forward, agent can move in all directions except left<br>
@@ -12392,7 +12405,13 @@ Agent minimizes time taken to reach destination. A high penalty should be served
  -- forward : 0.00<br>
  -- right : 0.36<br>
  -- left : -11.87<br></p>
-<p>4) I think that the last example above, although generally gets the right policy in the sense that it has a high penalty for turning left on a red light, or high reward for staying put, doesn't get it all right as we'd want the only +ve reward to be turning right in this instance. The policy is actually showing no penalty or reward for moving forward, but ideally we'd want this to be -ve as well. It is possible that we either didn't have alpha high enough so the learning is a bit constrained, or because the agent required even more training to pick up nuances like this one.</p>
+<p>4) From the logs, the agent did not learn the optimal policy in the instance:</p>
+<p>('right', 'green', 'right', 'forward')
+ -- None : 0.00
+ -- forward : 0.65
+ -- right : 0.32
+ -- left : -10.04</p>
+<p>Here, the agent could follow the waypoint and turn right, but it did not. I think these instances occur more often in the first few trials, so it is likely that the agent didn't learn teh optimal policy because it hasn't been given enough time or trials to learn just yet</p>
 
 </div>
 </div>
@@ -12420,7 +12439,7 @@ Agent minimizes time taken to reach destination. A high penalty should be served
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Answer:</strong> While we have a waypoint i.e. an end destination for the smartcab, we're not training it to choose the best route to get to this destination. Presumably, the waypoint has already picked a route but this may or may not be updating given current traffic conditions. Future rewards would be useful for use in this project, if the smartcab was also being measured on its 'efficiency' i.e. some reward for choosing the best action based on waypoint, deadline, inputs as well as best route. In addition, the randomness of the route itself i.e. a different start/end point makes it impossible to use future rewards as the 'goal' isn't the same with every trial.</p>
+<p><strong>Answer:</strong> The agent has waypoint information but it is limited to what direction it needs to go in for the next step. Because the agent doesn't need to learn the best route to its destination and/or what action it should take 2-3 steps from the current state, future rewards won't do much here. In addition, vehicles in the environment are always moving, and the agent is not learning anything about traffic a few steps ahead of itself. Finally, the start and end for the agent changes for every trial we run, so there is no learning being transferred from one trial to the next.</p>
 
 </div>
 </div>
